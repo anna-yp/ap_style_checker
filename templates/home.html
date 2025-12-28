@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Submit your text</title>
+</head>
+
+<style>
+
+  .highlight-green {
+    background-color: lightgreen;
+    padding: 2px 5px;
+  }
+
+  .box {
+    width: 400px;
+    height: 300px;
+
+    background-color: #f0f0f0;
+    border: 2px solid #333;
+
+  }
+
+</style>
+
+<body>
+
+<h2>AP style checker</h2>
+
+<div>
+  <p>Submit article here</p>
+
+    <form id='form' action="/checker" method="POST">
+      <div class='box' id='editor' name="editor" contenteditable="true">
+          "Hi," said Anna.  
+      </div>
+
+      <input type="hidden" name="text-content" id="hiddenInput">
+      <button onclick='update()' type="submit">Submit article</button>
+    </form>
+  
+</body>
+
+<script>
+
+  // const form = document.getElementById("form")
+
+  // form.addEventListener('submit', e => {
+  //   e.preventDefault();
+
+  function update() {
+
+    const jsonTextContent = JSON.stringify(document.getElementById("editor").innerText
+        )
+
+    fetch("/checker", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+        },
+      body: jsonTextContent
+      });
+
+    };
+
+  
+
+// copy content into hidden
+
+//   document.querySelector("form").addEventListener("submit", () => {
+//     document.getElementById("text-content").value =
+//       document.getElementById("editor").innerHTML;
+//   });
+
+
+
+  // function performReplacement() {
+  //     const editor= document.getElementById('editor');
+  //     const originalText = editor.textContent;
+
+  //     const startIndex = data.start_index;
+  //     const endIndex = data.end_index;
+  //     const replacementText = "Mars";
+
+  //     const newText = replaceSubstringByIndex(originalText, startIndex, endIndex, replacementText);
+      
+  //     // Update the div's content
+  //     editableDiv.textContent = newText;
+
+  //     // Restore the cursor position (place it at the end of the new text)
+  //     setCaretPosition(editableDiv, startIndex + replacementText.length);
+  //   }
+
+  //   // Helper function to set the caret (cursor) position
+  //   function setCaretPosition(element, offset) {
+  //       const range = document.createRange();
+  //       const selection = window.getSelection();
+  //       const textNode = element.firstChild;
+
+  //       if (textNode) {
+  //           range.setStart(textNode, Math.min(offset, textNode.length));
+  //           range.setEnd(textNode, Math.min(offset, textNode.length));
+  //           selection.removeAllRanges();
+  //           selection.addRange(range);
+  //       }
+  //   }
+</script>

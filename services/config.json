@@ -1,0 +1,8 @@
+
+{
+    "two_in_a_row":{
+        "quote_type": "closing_quote",
+        "pos_offset": "after",
+        "pos": "VERB"
+    }
+}
