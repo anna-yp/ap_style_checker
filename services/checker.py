@@ -45,15 +45,19 @@ class Grammar:
 
 
     def split_into_sentences(self, string_content):
-        ''' 
+        '''
         Args: raw string content from user
-        Returns: list of tokenized sentences
+        Returns: list of dicts with sentence text and starting offsets
         '''
         tokenized_content = self.nlp(string_content)
         sentence_list = []
 
         for sent in tokenized_content.sents:
-            sentence_list.append(f"{sent}")
+            sentence_list.append({
+                'text': f"{sent}",
+                'start': sent.start_char,
+                'end': sent.end_char,
+            })
         
         return sentence_list
 
@@ -117,7 +121,8 @@ class Grammar:
         issues = []
 
         sentence_list = self.split_into_sentences(input_string)
-        tagged_sentences_list = self.tag_paragraph(sentence_list)
+        sentence_text = [sentence['text'] for sentence in sentence_list]
+        tagged_sentences_list = self.tag_paragraph(sentence_text)
 
         for sentence_index in range(len(tagged_sentences_list)):
 
@@ -131,11 +136,18 @@ class Grammar:
                             # print(f"'sentence_index': {sentence_index}, 'token': {tagged_sentences_list[sentence_index][token_index]['text']}")
                             # print(f"'sentence_index': {sentence_index}, 'token': {tagged_sentences_list[sentence_index][next_token_index]['text']}")
 
+                            start_index = tagged_sentences_list[sentence_index][token_index]['start_index']
+                            end_index = tagged_sentences_list[sentence_index][second_token_index]['end_index']
+                            absolute_start = sentence_list[sentence_index]['start'] + start_index
+                            absolute_end = sentence_list[sentence_index]['start'] + end_index
+
                             issues.append({
                                 'sentence_index': sentence_index, 
                                 'text': tagged_sentences_list[sentence_index][token_index]['text'], 
-                                'start_index': tagged_sentences_list[sentence_index][token_index]['start_index'], 
-                                'end_index': tagged_sentences_list[sentence_index][second_token_index]['end_index']
+                                'start_index': start_index, 
+                                'end_index': end_index,
+                                'absolute_start_index': absolute_start,
+                                'absolute_end_index': absolute_end,
                                 })
 
                     else:
@@ -145,23 +157,3 @@ class Grammar:
 
 config = config_loader('config.json')
 grammar = Grammar(config)
-
-string = '“Lmao," said Anna. “Lol. So funny," Anna said.'
-
-grammar.get_char_indexes(string)
-
-issues = grammar.check_quote_and_pos(string)
-print(type(issues))
-
-sentence_list = grammar.split_into_sentences(string)
-
-def insert_divs(sentence_list, issues):
-    for issue in issues:
-        print(f'testing issues: {issue['text']}, {issue['sentence_index']}, {issue['start_index']}, {issue['end_index']}')
-        sentence_index = issue['sentence_index']
-        start_index = issue['start_index']
-        end_index = issue['end_index']
-
-        print(f'testing: {sentence_list[sentence_index][start_index:end_index]}')
-
-insert_divs(sentence_list, issues)
