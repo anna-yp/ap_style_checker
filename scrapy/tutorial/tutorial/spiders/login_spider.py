@@ -6,23 +6,37 @@ from scrapy.http import FormRequest
 
 class ExampleSpider(scrapy.Spider):
     name = "quotes"
+    login_url = "https://www.apstylebook.com/users/sign_in"
     start_urls = [
-        "https://www.apstylebook.com/",
+        "https://www.apstylebook.com/ap_stylebook",
     ]
     
-    def start_requests(self):
-        login_url = 'http://quotes.toscrape.com/login'
-        return scrapy.Request(login_url, callback=self.login)
+    async def start(self):
+        yield scrapy.Request(
+            url=self.login_url,
+            callback=self.login,
+        )
     
+
     def login(self, response):
-        token = response.css("form input[name=csrf_token]::attr(value)").extract_first()
-        return FormRequest.from_response(response,
-                                         formdata={'csrf_token': token,
-                                                   'password': 'foobar',
-                                                   'username': 'foobar'},
-                                         callback=self.start_scraping)
+        csrf = response.xpath("//meta[@name='csrf-token']/@content").extract_first()
+
+        yield FormRequest(
+            url=self.login_url,
+            formdata={
+                "authenticity_token": csrf,
+                'user[login]': 'scotscoopeditor2@gmail.com',
+                'user[password]': '',
+            },
+            callback=self.after_login,
+            )
+        
+    def after_login(self, response):
+
+        for url in self.start_urls:
+            yield scrapy.Request(url, callback=self.parse)
 
     def parse(self, response):
         page = response.url.split("/")[-2]
-        filename = f"quotes-{page}.html"
+        filename = f"{page}.html"
         Path(filename).write_bytes(response.body)
