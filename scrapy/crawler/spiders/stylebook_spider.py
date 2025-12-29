@@ -4,8 +4,8 @@ import scrapy
 from scrapy.http import FormRequest
 
 
-class ExampleSpider(scrapy.Spider):
-    name = "quotes"
+class stylebookSpider(scrapy.Spider):
+    name = "stylebook"
     login_url = "https://www.apstylebook.com/users/sign_in"
     start_urls = [
         "https://www.apstylebook.com/ap_stylebook",
@@ -17,7 +17,6 @@ class ExampleSpider(scrapy.Spider):
             callback=self.login,
         )
     
-
     def login(self, response):
         csrf = response.xpath("//meta[@name='csrf-token']/@content").extract_first()
 
@@ -28,13 +27,8 @@ class ExampleSpider(scrapy.Spider):
                 'user[login]': 'scotscoopeditor2@gmail.com',
                 'user[password]': '',
             },
-            callback=self.after_login,
+            callback=self.parse,
             )
-        
-    def after_login(self, response):
-
-        for url in self.start_urls:
-            yield scrapy.Request(url, callback=self.parse)
 
     def parse(self, response):
         page = response.url.split("/")[-2]
