@@ -6,7 +6,8 @@
 import scrapy
 
 
-class StyleItem(scrapy.Item):
-    # define the fields for your item here like:
-    # name = scrapy.Field()
-    pass
+class Text(scrapy.Item):
+    category = scrapy.Field()
+    source_url = scrapy.Field()
+    text_content = scrapy.Field()
+    
