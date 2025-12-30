@@ -7,7 +7,7 @@ import scrapy
 
 
 class Text(scrapy.Item):
-    category = scrapy.Field()
+    entry_header = scrapy.Field()
     source_url = scrapy.Field()
     text_content = scrapy.Field()
     
