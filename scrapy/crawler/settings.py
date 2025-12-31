@@ -59,7 +59,16 @@ DOWNLOAD_DELAY = 1
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-   "crawler.pipelines.JsonLinesPipeline": 300,
+#    "crawler.pipelines.JsonLinesPipeline": 300,
+}
+
+FEEDS = {
+    "/Users/Bettina/side_quests/ap_style_app/data/raw/%(time)s.jsonl": {
+        "format": "jsonlines",
+        "encoding": "utf8",
+        "ensure_ascii": False,
+        "overwrite": True,
+    }
 }
 
 # Enable and configure the AutoThrottle extension (disabled by default)
