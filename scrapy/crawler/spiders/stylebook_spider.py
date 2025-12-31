@@ -1,6 +1,7 @@
 from pathlib import Path
 
 import scrapy
+import re
 from scrapy.http import FormRequest
 from scrapy.linkextractors import LinkExtractor
 from crawler.items import Text
@@ -18,12 +19,12 @@ class stylebookSpider(scrapy.Spider):
     ]
 
     link_extractor = LinkExtractor(
-            # allow= [
+            allow= [
                 '/ap_stylebook',
                 # '/merriam_webster',
                 # '/ask_the_editors',
                 # '/blog_posts'
-                # ],
+                ],
             allow_domains=["apstylebook.com"]
             )
     
@@ -64,19 +65,24 @@ class stylebookSpider(scrapy.Spider):
     #     for link in self.link_extractor.extract_links(response):
     #         yield scrapy.Request(link.url, callback=self.parse)
 
+    def is_stylebook_url(self, url):
+        STYLEBOOK_RE = re.compile(r"^https?://(www\.)?apstylebook\.com/ap_stylebook/[^/?#]+/?$")
+
+        if STYLEBOOK_RE.match(url):
+            return True
+    
     def parse(self, response):
-        if 'apstylebook.com/ap_stylebook/' in response.url:
+        if self.is_stylebook_url(response.url):
             self.logger.info(f"Scraping article: {response.url}")
 
             scraped_text = Text()
 
+            header = response.xpath("//h1[@class='entry_header']/text()").get()
+            entry = response.xpath("//div[@class='entry_content']//text()").getall()
+
             scraped_text['source_url'] = response.url
-            scraped_text['entry_header'] = response.xpath("//h1[@class='entry_header']/text()").get()
-            scraped_text['text_content'] = " ".join( 
-                                t.strip()
-                                for t in response.xpath("//div[@class='entry_content']//text()").getall()
-                                if t.strip()
-                                )
+            scraped_text['entry_header'] = header.strip() 
+            scraped_text['text_content'] = " ".join(t.strip() for t in entry if t.strip())
 
             yield scraped_text
             return
@@ -90,34 +96,3 @@ class stylebookSpider(scrapy.Spider):
         next_page = response.css("a.next::attr(href)").get()
         if next_page:
             yield response.follow(next_page, callback=self.parse)
-
-
-    # def parse_list(self, response):
-    #     links = self.link_extractor.extract_links(response)
-    #     self.logger.info(f"Extracted {len(links)} links from {response.url}")
-
-    #     for link in links:
-    #         yield response.follow(link.url, callback=self.parse_article)
-
-    #     next_page = response.css("a.next::attr(href)").get()
-    #     if next_page:
-    #         yield response.follow(next_page, callback=self.parse_list)
-
-    # def parse_article(self, response):
-    #     if not 'apstylebook.com/ap_stylebook/' in response.url:
-    #         self.logger.info(f"Rejecting article: {response.url}")
-    #         return 
-        
-    #     self.logger.info(f"Scraping article: {response.url}")
-
-    #     scraped_text = Text()
-
-    #     scraped_text['source_url'] = response.url
-    #     scraped_text['entry_header'] = response.xpath("//h1[@class='entry_header']/text()").get()
-    #     scraped_text['text_content'] = " ".join( 
-    #                         t.strip()
-    #                         for t in response.xpath("//div[@class='entry_content']//text()").getall()
-    #                         if t.strip()
-    #                         )
-
-    #     yield scraped_text
