@@ -15,9 +15,11 @@ from langchain_community.vectorstores import FAISS
 load_dotenv()
 
 class JsonlVectorPipeline:
-    def __init__(self):
+    def __init__(self, jsonl_name):
         self.cleaner = cleanJsonl()
         self.ingestor = Ingest()
+
+        self.jsonl_name = jsonl_name
 
         self.docs = None
         self.vectorstore = None
@@ -30,9 +32,7 @@ class JsonlVectorPipeline:
         return docs
 
     def build_vectorstore(self, docs):
-        embeddings = OpenAIEmbeddings(
-            model="text-embedding-3-small")
-        
+        embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
         vectorstore = FAISS.from_documents(docs, embeddings)
 
         print(vectorstore)
@@ -40,6 +40,11 @@ class JsonlVectorPipeline:
         return vectorstore
     
     def query_vectorstore(self, query: str) -> tuple:
+        if not self.docs:
+            self.prep_docs(self.jsonl_name)
+        if not self.vectorstore:
+            self.build_vectorstore(self.docs)
+
         similar_docs = self.vectorstore.similarity_search_with_score(
             f"{query}"
             )
@@ -49,14 +54,6 @@ class JsonlVectorPipeline:
         self.similar_docs = similar_docs
         return similar_docs
     
-
-query = JsonlVectorPipeline()
-docs = query.prep_docs('2025-12-31')
-query.build_vectorstore(docs)
-question = "How  does AP handle titles for retired professors like ‘Professor Emeritus Susan Johnson’ when writing about Pride events?"
-query.query_vectorstore(question)
-
-
 # class QueryVectorstore():
 #     def __init__(self, jsonl_name: str):
 #         pipeline = JsonlVectorPipeline()
