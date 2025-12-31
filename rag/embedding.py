@@ -1,49 +1,46 @@
-import getpass
 from dotenv import load_dotenv
 import os
+from pathlib import Path
 import time
+
 from langchain_classic.embeddings import CacheBackedEmbeddings  
 from langchain_classic.storage import LocalFileStore 
 from langchain_openai import OpenAIEmbeddings
 
-class Embed():
 
+
+class Embed():
     def __init__(self):
         load_dotenv()
-        if not os.getenv("OPENAI_API_KEY"):
-            os.environ["OPENAI_API_KEY"] = getpass.getpass("Enter your OpenAI API key: ")
 
-        self.store = LocalFileStore("/Users/Bettina/side_quests/ap_style_app/data/embeddings/") 
+        self.embed_dir = Path(os.getenv("EMBED_DATA_DIR"))
+        if not os.getenv("OPENAI_API_KEY"):
+            print('OpenAI API key missing')
+
         self.underlying_embeddings = OpenAIEmbeddings(
             model="text-embedding-3-large",
-            # With the `text-embedding-3` class
-            # of models, you can specify the size
-            # of the embeddings you want returned.
-            # dimensions=1024
-        )
+            # reminder to checkout other models
+            )
 
-    def cached_embed(self, text):
+    def cached_embed(self, text, query=None):
+        store = LocalFileStore(self.embed_dir)
+
         cached_embedder = CacheBackedEmbeddings.from_bytes_store(
                                 self.underlying_embeddings,
-                                self.store,
+                                store,
                                 query_embedding_cache=True,
                                 namespace=self.underlying_embeddings.model
                             )
-        
         tic = time.time()
-        print(f"Second call took: {time.time() - tic:.2f} seconds")
-        return cached_embedder.embed_query(text)
-    
-    
-embed = Embed()
-embed.cached_embed("i'm anna")
+        cached_embedder.embed_documents(text)
+        print(f"Embedded text: {text}, took {time.time() - tic:.2f}")
 
-    # Example: caching a query embedding
-    # tic = time.time()
-    # print(cached_embedder.embed_query("Hello, world!"))
-    # print(f"First call took: {time.time() - tic:.2f} seconds")
+        if query:
+            tic = time.time()
+            cached_embedder.embed_query(query)
+            print(f"Embedded query: {query}, took {time.time() - tic:.2f}")
+            
 
-    # Subsequent calls use the cache
-    # tic = time.time()
-    # print(cached_embedder.embed_query("Hello, world!"))
-    # print(f"Second call took: {time.time() - tic:.2f} seconds")
+if __name__ == "__main__":
+    embed = Embed()
+    embed.cached_embed(text=["hi anna"])
