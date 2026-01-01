@@ -28,5 +28,6 @@ class Prompt:
                 },
             },
         )
-
+        
+        print(f'response: {response}')
         return response

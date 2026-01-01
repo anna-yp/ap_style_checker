@@ -102,28 +102,28 @@
     const chatbox = document.getElementById("chatbox");
     const payload = JSON.stringify({ text: chatbox.innerText });
 
-    // try {
-    //   const response = await fetch("/chat", {
-    //     method: "POST",
-    //     headers: {
-    //       "Content-Type": "application/json"
-    //     },
-    //     body: payload
-    //   });
+    try {
+      const response = await fetch("/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: payload
+      });
 
-    //   if (!response.ok) {
-    //     console.error("Failed to process text", response.statusText);
-    //     return;
-    //   }
+      if (!response.ok) {
+        console.error("Failed to process text", response.statusText);
+        return;
+      }
 
       const data = await response.json();
       if (data.answer) {
         chatbox.innerHTML = data.answer;
       }
-  //   } catch (error) {
-  //     console.error("Unable to reach checker", error);
-  //   }
-  // }
+    } catch (error) {
+        console.error("Unable to reach checker", error);
+      }
+    }
 
   
 

@@ -59,10 +59,12 @@ def check_for_grammar():
 
 @app.route('/chat', methods=["POST"])
 def prompt_gpt():
-    query = 'should i captialize principal in ap style'
+    payload = request.get_json(silent=True) or {}
+    text_content = payload.get('text', '')
+
+    query = text_content
     prompt = Prompt('2025-12-31')
     response = prompt.prompt_gpt(query)
-    
 
     answer_parts = []
     for item in response.output:
@@ -72,6 +74,7 @@ def prompt_gpt():
                     answer_parts.append(part.text)
     answer_text = "".join(answer_parts)
 
+    print(f'answer: {answer_text}')
     return jsonify({"answer": answer_text})
 
 
