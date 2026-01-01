@@ -39,7 +39,7 @@
 
 <h2>AP style checker</h2>
 
-<div>
+<div></div>
   <p>Submit article here</p>
 
     <form id='form' action="/checker" method="POST" onsubmit="handleSubmit(event)">
@@ -49,7 +49,20 @@
 
       <button type="submit">Check article</button>
     </form>
-  
+</div>
+
+<div></div>
+  <p>Speak to stylebook here</p>
+
+    <form id='form' action="/chat" method="POST" onsubmit="handleChat(event)">
+      <div class='box' id='chatbox' name="chatbox" contenteditable="true">
+          "Test chat!"
+      </div>
+
+      <button type="submit">Send question</button>
+    </form>
+</div>
+
 </body>
 
 <script>
@@ -82,6 +95,35 @@
       console.error("Unable to reach checker", error);
     }
   }
+
+  async function handleChat(event) {
+    event.preventDefault();
+
+    const chatbox = document.getElementById("chatbox");
+    const payload = JSON.stringify({ text: chatbox.innerText });
+
+    // try {
+    //   const response = await fetch("/chat", {
+    //     method: "POST",
+    //     headers: {
+    //       "Content-Type": "application/json"
+    //     },
+    //     body: payload
+    //   });
+
+    //   if (!response.ok) {
+    //     console.error("Failed to process text", response.statusText);
+    //     return;
+    //   }
+
+      const data = await response.json();
+      if (data.answer) {
+        chatbox.innerHTML = data.answer;
+      }
+  //   } catch (error) {
+  //     console.error("Unable to reach checker", error);
+  //   }
+  // }
 
   
 
