@@ -1,4 +1,3 @@
-
 import scrapy
 import re
 from scrapy.http import FormRequest
@@ -6,13 +5,13 @@ from scrapy.linkextractors import LinkExtractor
 from crawler.items import entryText
 
 
-class stylebookSpider(scrapy.Spider):
-    name = "stylebook"
+class blogSpider(scrapy.Spider):
+    name = "blogs"
     login_url = "https://www.apstylebook.com/users/sign_in"
 
     link_extractor = LinkExtractor(
             allow= [
-                '/ap_stylebook',
+                '/blog_posts'
                 ],
             allow_domains=["apstylebook.com"]
             )
@@ -36,19 +35,19 @@ class stylebookSpider(scrapy.Spider):
             callback=self.parse,
             )
 
-    def is_stylebook_url(self, url):
-        stylebook_re = re.compile(r"^https?://(www\.)?apstylebook\.com/ap_stylebook/[^/?#]+/?$")
+    def is_blog_url(self, url):
+        blog_re = re.compile(r"^https?://(www\.)?apstylebook\.com/blog_posts/[^/?#]+/?$")
 
-        if stylebook_re.match(url):
+        if blog_re.match(url):
             return True
     
     def parse(self, response):
-        if self.is_stylebook_url(response.url):
+        if self.is_blog_url(response.url):
             self.logger.info(f"Scraping article: {response.url}")
 
             scraped_text = entryText()
 
-            header = response.xpath("//h1[@class='entry_header']/text()").get()
+            header = response.xpath("//h1[@class='mb-0']/text()").get()
             entry = response.xpath("//div[@class='entry_content']//text()").getall()
 
             scraped_text['source_url'] = response.url
