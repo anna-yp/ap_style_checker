@@ -5,9 +5,13 @@
 
 import scrapy
 
-
-class Text(scrapy.Item):
+class entryText(scrapy.Item):
     entry_header = scrapy.Field()
     source_url = scrapy.Field()
     text_content = scrapy.Field()
+
+class answerText(scrapy.Item):
+    question = scrapy.Field()
+    source_url = scrapy.Field()
+    answer = scrapy.Field()
     
