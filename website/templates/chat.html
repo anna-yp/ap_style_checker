@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Style Checker · Chat</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600&family=Poppins:wght@400;500;600&family=Work+Sans:wght@500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --rose: #a0153d;
+      --ivory: #f4f1ea;
+      --ink: #1f1a18;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    .page-shell {
+      width: 100%;
+      padding: 2rem clamp(1.5rem, 4vw, 3.5rem) 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .content-lane {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: inherit;
+      padding-bottom: 1rem;
+    }
+
+    .brand {
+      border: none;
+      background: transparent;
+      font-family: "Work Sans", sans-serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      font: 600 0.95rem inherit;
+      color: rgba(31, 26, 24, 0.65);
+      text-decoration: none;
+    }
+
+    .nav-link.active {
+      color: var(--ink);
+    }
+
+    .chat-panel {
+      position: relative;
+      min-height: calc(100vh - 220px);
+      padding-bottom: 3rem;
+      overflow: hidden;
+    }
+
+    .chat-panel::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -360px;
+      transform: translateX(-50%);
+      width: 900px;
+      height: 900px;
+      background: radial-gradient(circle, rgba(192, 83, 117, 0.35), transparent 70%);
+      filter: blur(70px);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .chat-layout {
+      position: relative;
+      z-index: 1;
+      min-height: 65vh;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      width: 100%;
+    }
+
+    .section-label {
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: rgba(31, 26, 24, 0.7);
+    }
+
+    .chat-transcript {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      flex: 1;
+      overflow-y: auto;
+      padding-right: 0.5rem;
+      padding-bottom: 1.25rem;
+    }
+
+    .message {
+      max-width: min(70%, 540px);
+      padding: 0.95rem 1.2rem;
+      border-radius: 18px;
+      line-height: 1.55;
+      font-size: 0.98rem;
+      border: 1px solid rgba(32, 26, 24, 0.08);
+      background: #ffffff;
+      box-shadow: 0 10px 30px rgba(32, 26, 24, 0.06);
+      color: var(--ink);
+    }
+
+    .message.user {
+      align-self: flex-end;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+    }
+
+    .chat-input-wrapper {
+      position: sticky;
+      bottom: 0;
+      padding-bottom: 1rem;
+      background: linear-gradient(180deg, rgba(244, 241, 234, 0) 0%, var(--ivory) 60%);
+      display: flex;
+      justify-content: center;
+    }
+
+    .chat-input {
+      border: 1px solid rgba(160, 21, 61, 0.35);
+      border-radius: 999px;
+      padding: 0.4rem 0.7rem 0.4rem 1.4rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      background: #fff;
+      box-shadow: 0 14px 40px rgba(32, 26, 24, 0.12);
+      width: min(900px, 100%);
+    }
+
+    .chat-input textarea {
+      flex: 1;
+      border: none;
+      resize: none;
+      font: 500 1rem inherit;
+      background: transparent;
+      padding: 0.65rem 0;
+    }
+
+    .chat-input textarea:focus {
+      outline: none;
+    }
+
+    .send-btn {
+      border: none;
+      border-radius: 50%;
+      padding: 0.4rem;
+      width: 42px;
+      height: 42px;
+      background: transparent;
+      color: rgba(32, 26, 24, 0.6);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .send-btn svg {
+      width: 18px;
+      height: 18px;
+      stroke: rgba(32, 26, 24, 0.7);
+    }
+
+    @media (max-width: 700px) {
+      .message {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="top-bar">
+      <button class="brand" type="button">ap style checker</button>
+      <nav class="nav-links" aria-label="Primary">
+        <a class="nav-link" href="/home">Home</a>
+        <a class="nav-link" href="/check">Check</a>
+        <a class="nav-link active" href="/chat">Chat</a>
+      </nav>
+    </header>
+
+    <main class="content-lane chat-panel">
+      <div class="chat-layout">
+        <div class="chat-content">
+          <p class="section-label">Chat</p>
+          <div class="chat-transcript">
+            <div class="message assistant">We’re ready whenever you are—ask about capitalization, numerals, or how to cite a source.</div>
+            <div class="message user">Should I capitalize "governor-elect" when it follows a name in a caption?</div>
+            <div class="message assistant">
+              Keep it lowercase once the title follows the name: “John Rivera, the governor-elect, said…” Use uppercase only when it directly precedes the name.
+            </div>
+            <div class="message user">Need a quick refresher on numerals for millions.</div>
+            <div class="message assistant">
+              Pair a figure with the word “million” — “3 million” — unless the sentence begins with the number. Include decimals if precision is needed (e.g., “3.2 million”).
+            </div>
+          </div>
+        </div>
+        <div class="chat-input-wrapper">
+          <form class="chat-input" onsubmit="return false;">
+            <textarea rows="1" placeholder="Ask about titles, numerals, punctuation…"></textarea>
+            <button class="send-btn" type="button" aria-label="Send message" action="onSend">
+              <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12L19.5 4.5L13.5 12L19.5 19.5L4.5 12Z"></path>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+</body>
+
+<script>
+  const input = document.querySelector('.chat-input textarea');
+
+  function onSend() {
+    const text = input.value.trim();
+    
+  }
+</script>
+</html>
