@@ -32,7 +32,19 @@ app = Flask(__name__)
 
 @app.route('/')
 def landing_page():
-    return render_template('premium_interface.html')
+    return render_template('home.html')
+
+@app.route('/home')
+def home_page():
+    return render_template('home.html')
+
+@app.route('/check')
+def home_page():
+    return render_template('check.html')
+
+@app.route('/chat')
+def home_page():
+    return render_template('chat.html')
 
 @app.route('/checker', methods=["POST"])
 def check_for_grammar():

@@ -2,126 +2,136 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Submit your text</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Style Checker · Home</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow:wght@500;600&family=Hedvig+Letters+Serif:wght@400;500&family=Manrope:wght@500;600&family=Poppins:wght@400;500;600&family=Work+Sans:wght@500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      --rose: #a0153d;
+      --ivory: #f4f1ea;
+      --ink: #1f1a18;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: "AG Display", "Noto Serif Display", "Georgia", serif;
+    }
+
+    .page-shell {
+      width: 100%;
+      padding: 2rem clamp(1.5rem, 4vw, 3.5rem) 2.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .content-lane {
+      max-width: 1150px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    .brand {
+      border: none;
+      background: transparent;
+      font-family: "Work Sans", sans-serif;
+      font-size: 1.25rem;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 1.5rem;
+    }
+
+    .nav-link {
+      font: 600 0.95rem "Poppins", system-ui, sans-serif;
+      color: rgba(31, 26, 24, 0.65);
+      text-decoration: none;
+    }
+
+    .nav-link.active {
+      color: var(--ink);
+    }
+
+    .hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 2rem 0 3rem;
+      width: min(1100px, 100%);
+      margin: 0 auto;
+      font-family: "Hedvig Letters Serif", serif;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(3rem, 9vw, 5rem);
+      font-weight: 300;
+    }
+
+    .hero p {
+      margin: 0;
+      line-height: 1.6;
+      color: rgba(31, 26, 24, 0.7);
+      max-width: 560px;
+    }
+
+    .hero-card {
+      width: 100%;
+      height: clamp(220px, 45vw, 360px);
+      border-radius: 38px;
+      background: var(--rose);
+      box-shadow: 0 30px 80px rgba(132, 15, 46, 0.18);
+      margin-top: 1.5rem;
+    }
+  </style>
 </head>
-
-<style>
-
-  .red-underline {
-    background-image: linear-gradient(
-      to right,
-      rgba(255, 0, 0, 0.4),
-      rgba(255, 0, 0, 0.4)
-    );
-    background-repeat: no-repeat;
-    background-size: 100% 2px;     /* thickness */
-    background-position: 0 100%;   /* underline position */
-    border-radius: 2px;            /* rounding */
-    padding-bottom: .2px;           /* space above underline */
-  }
-
-  .box {
-    width: 400px;
-    height: 300px;
-
-    background-color: #f0f0f0;
-    border: 2px solid #333;
-
-  }
-
-  .issue-marker {
-    display: inline;
-  }
-
-</style>
-
 <body>
+  <div class="page-shell">
+    <header class="top-bar">
+      <button class="brand" type="button">ap style checker</button>
+      <nav class="nav-links" aria-label="Primary">
+        <a class="nav-link active" href="/home">Home</a>
+        <a class="nav-link" href="/check">Check</a>
+        <a class="nav-link" href="/chat">Chat</a>
+      </nav>
+    </header>
 
-<h2>AP style checker</h2>
-
-<div>
-  <p>Submit article here</p>
-
-    <form id='form' action="/checker" method="POST" onsubmit="handleSubmit(event)">
-      <div class='box' id='editor' name="editor" contenteditable="true">
-          "Hi," said Anna.  
-      </div>
-
-      <button type="submit">Check article</button>
-    </form>
-  
+    <main class="content-lane">
+      <section class="hero">
+        <h1>Check anything.</h1>
+        <p class="subheading">AI for editors.</p>
+        <p>Check your writing against AP Style’s guidance with an assistant that cites sources, clarifies grammar, and keeps your newsroom consistent.</p>
+        <div class="hero-card" aria-hidden="true"></div>
+      </section>
+    </main>
+  </div>
 </body>
 
-<script>
-
-  async function handleSubmit(event) {
-    event.preventDefault();
-
-    const editor = document.getElementById("editor");
-    const payload = JSON.stringify({ text: editor.innerText });
-
-    try {
-      const response = await fetch("/checker", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: payload
-      });
-
-      if (!response.ok) {
-        console.error("Failed to process text", response.statusText);
-        return;
-      }
-
-      const data = await response.json();
-      if (data.text_with_divs) {
-        editor.innerHTML = data.text_with_divs;
-      }
-    } catch (error) {
-      console.error("Unable to reach checker", error);
-    }
-  }
-
-  
-
-// copy content into hidden
-
-//   document.querySelector("form").addEventListener("submit", () => {
-//     document.getElementById("text-content").value =
-//       document.getElementById("editor").innerHTML;
-//   });
-
-
-
-  // function performReplacement() {
-  //     const editor= document.getElementById('editor');
-  //     const originalText = editor.textContent;
-
-  //     const startIndex = data.start_index;
-  //     const endIndex = data.end_index;
-  //     const replacementText = "Mars";
-
-  //     const newText = replaceSubstringByIndex(originalText, startIndex, endIndex, replacementText);
-      
-  //     // Update the div's content
-  //     editableDiv.textContent = newText;
-
-  //     // Restore the cursor position (place it at the end of the new text)
-  //     setCaretPosition(editableDiv, startIndex + replacementText.length);
-  //   }
-
-  //   // Helper function to set the caret (cursor) position
-  //   function setCaretPosition(element, offset) {
-  //       const range = document.createRange();
-  //       const selection = window.getSelection();
-  //       const textNode = element.firstChild;
-
-  //       if (textNode) {
-  //           range.setStart(textNode, Math.min(offset, textNode.length));
-  //           range.setEnd(textNode, Math.min(offset, textNode.length));
-  //           selection.removeAllRanges();
-  //           selection.addRange(range);
-  //       }
-  //   }
-</script>
+</html>
