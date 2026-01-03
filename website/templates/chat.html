@@ -29,6 +29,25 @@
       font-family: "Poppins", system-ui, sans-serif;
     }
 
+    #nav-bar {
+      margin: 0;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      background: var(--ivory);
+      border-bottom: 1px var(--ivory);
+      box-shadow: 0 6px 24px var(--ivory);
+      gap: 10px;
+    }
+
+    #nav-bar .bar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .page-shell {
       width: 100%;
       padding: 2rem clamp(1.5rem, 4vw, 3.5rem) 0;
@@ -54,7 +73,7 @@
     .brand {
       border: none;
       background: transparent;
-      font-family: "Work Sans", sans-serif;
+      font-family:  "Hedvig Letters Serif", serif;
       font-size: 1.25rem;
       letter-spacing: 0.06em;
       text-transform: lowercase;
@@ -80,24 +99,24 @@
 
     .chat-panel {
       position: relative;
-      min-height: calc(100vh - 220px);
-      padding-bottom: 3rem;
+      min-height: calc(100vh - 200px);
+      padding-bottom: 4rem;
       overflow: hidden;
     }
 
-    .chat-panel::after {
+    /* .chat-panel::after {
       content: "";
       position: absolute;
       left: 50%;
-      bottom: -360px;
+      bottom: -550px;
       transform: translateX(-50%);
       width: 900px;
-      height: 900px;
-      background: radial-gradient(circle, rgba(192, 83, 117, 0.35), transparent 70%);
-      filter: blur(70px);
+      height: 1000px;
+      background: radial-gradient(circle, rgba(192, 83, 117, 0.25), transparent 70%);
+      filter: blur(60px);
       pointer-events: none;
       z-index: 0;
-    }
+    } */
 
     .chat-layout {
       position: relative;
@@ -107,12 +126,16 @@
       flex-direction: column;
       gap: 1.5rem;
       width: 100%;
+      padding-bottom: 1rem;
     }
 
     .section-label {
-      font-weight: 500;
+      font-size: medium;
+      font-weight: 100;
       letter-spacing: 0.04em;
-      color: rgba(31, 26, 24, 0.7);
+      color: black;
+      display: flex;
+      justify-content: center;
     }
 
     .chat-transcript {
@@ -121,8 +144,6 @@
       gap: 1.2rem;
       flex: 1;
       overflow-y: auto;
-      padding-right: 0.5rem;
-      padding-bottom: 1.25rem;
     }
 
     .message {
@@ -145,13 +166,17 @@
       align-self: flex-start;
     }
 
+    .chat-input-spacer {
+      height: 2rem;
+    }
+
     .chat-input-wrapper {
       position: sticky;
       bottom: 0;
-      padding-bottom: 1rem;
-      background: linear-gradient(180deg, rgba(244, 241, 234, 0) 0%, var(--ivory) 60%);
       display: flex;
       justify-content: center;
+      background: var(--ivory);
+      padding: 0 0 1rem;
     }
 
     .chat-input {
@@ -170,9 +195,8 @@
       flex: 1;
       border: none;
       resize: none;
-      font: 500 1rem inherit;
-      background: transparent;
-      padding: 0.65rem 0;
+      font: inherit;
+      position: relative; 
     }
 
     .chat-input textarea:focus {
@@ -207,23 +231,28 @@
   </style>
 </head>
 <body>
-  <div class="page-shell">
-    <header class="top-bar">
-      <button class="brand" type="button">ap style checker</button>
+  <div id="nav-bar">
+    <button class="brand" type="button">ap style checker</button>
+
+    <div class="bar-right">
       <nav class="nav-links" aria-label="Primary">
         <a class="nav-link" href="/home">Home</a>
         <a class="nav-link" href="/check">Check</a>
         <a class="nav-link active" href="/chat">Chat</a>
       </nav>
-    </header>
+    </div>
+  </div>
 
+  <div class="page-shell">
+    
     <main class="content-lane chat-panel">
+      <div class="section-label">Ask our AI anything AP Style.</div>
       <div class="chat-layout">
         <div class="chat-content">
           <div class="chat-transcript">
-            <div class="message user">Need a quick refresher on numerals for millions.</div>
+            <!-- <div class="message user">Need a quick refresher on numerals for millions.</div>
             <div class="message assistant">
-              Pair a figure with the word “million” — “3 million” — unless the sentence begins with the number. Include decimals if precision is needed (e.g., “3.2 million”).
+              Pair a figure with the word “million” — “3 million” — unless the sentence begins with the number. Include decimals if precision is needed (e.g., “3.2 million”). -->
             </div>
           </div>
         </div>
