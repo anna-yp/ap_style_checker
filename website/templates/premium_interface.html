@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AP Style Checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/ag-display" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap"
+    rel="stylesheet"
+  />
+  <style>
+    :root {
+      color-scheme: light;
+      --rose: #a0153d;
+      --rose-muted: #c23259;
+      --ivory: #f4f1ea;
+      --ink: #1f1a18;
+      --ink-soft: rgba(32, 26, 24, 0.72);
+      font-size: 16px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--ivory);
+      color: var(--ink);
+      font-family: "AG Display", "Noto Serif Display", "Georgia", serif;
+      letter-spacing: 0.01em;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    .page-shell {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem clamp(1.5rem, 4vw, 4rem) 5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .top-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      font-family: "Poppins", system-ui, sans-serif;
+    }
+
+    .brand {
+      font-family: "AG Display", serif;
+      font-size: 1.2rem;
+      letter-spacing: 0.05em;
+      text-transform: none;
+      font-weight: 400;
+      border: none;
+      background: transparent;
+      padding: 0;
+      cursor: pointer;
+      color: var(--ink);
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+    }
+
+    .nav-link {
+      border: none;
+      background: transparent;
+      font: 600 0.95rem "Poppins", system-ui, sans-serif;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      padding: 0.25rem 0;
+      position: relative;
+      color: rgba(32, 26, 24, 0.6);
+    }
+
+    .nav-link.active,
+    .nav-link:focus-visible {
+      color: var(--ink);
+    }
+
+    .nav-link.active::after {
+      content: "";
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: -0.2rem;
+      height: 2px;
+      background: var(--ink);
+    }
+
+    main {
+      min-height: 70vh;
+    }
+
+    .view {
+      display: none;
+      gap: 3rem;
+    }
+
+    .view.active {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero {
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1.25rem;
+      padding: 2rem 0 3rem;
+    }
+
+    .hero h1 {
+      margin: 0;
+      font-size: clamp(3rem, 9vw, 5rem);
+      font-weight: 300;
+    }
+
+    .hero p {
+      margin: 0;
+      line-height: 1.6;
+      color: var(--ink-soft);
+      max-width: 560px;
+    }
+
+    .hero .subheading {
+      font-size: clamp(1.4rem, 3vw, 1.9rem);
+      color: var(--ink);
+      letter-spacing: 0.01em;
+    }
+
+    .hero-card {
+      width: min(920px, 95%);
+      height: clamp(200px, 45vw, 320px);
+      border-radius: 38px;
+      background: var(--rose);
+      box-shadow: 0 30px 80px rgba(132, 15, 46, 0.18);
+      margin-top: 1.5rem;
+    }
+
+    .section-label {
+      font-family: "Poppins", system-ui, sans-serif;
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      text-transform: none;
+      color: rgba(32, 26, 24, 0.7);
+      margin: 0 0 1.25rem;
+      font-weight: 500;
+    }
+
+    .check-panel {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .check-grid {
+      display: grid;
+      grid-template-columns: minmax(520px, 3fr) minmax(280px, 1.2fr);
+      gap: 2rem;
+      font-family: "Poppins", system-ui, sans-serif;
+      width: 100%;
+      align-items: flex-start;
+    }
+
+    .manuscript {
+      border: 1px solid rgba(32, 26, 24, 0.15);
+      border-radius: 24px;
+      padding: 2rem;
+      background: rgba(255, 255, 255, 0.78);
+      min-height: 340px;
+      font-family: "AG Display", "Noto Serif Display", serif;
+      font-size: 1.05rem;
+      line-height: 1.7;
+    }
+
+    .manuscript mark {
+      background: none;
+      padding: 0 0.2rem 0.05rem;
+      border-radius: 999px;
+      background-image: linear-gradient(
+        to right,
+        rgba(160, 21, 61, 0.4),
+        rgba(160, 21, 61, 0.35)
+      );
+      background-repeat: no-repeat;
+      background-size: calc(100% - 0.6rem) 3px;
+      background-position: center calc(100% - 1px);
+    }
+
+    .suggestions {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .suggestion {
+      border: 1px solid rgba(32, 26, 24, 0.14);
+      border-radius: 18px;
+      padding: 1.25rem 1.5rem;
+      background: rgba(255, 255, 255, 0.85);
+      line-height: 1.6;
+    }
+
+    .suggestion strong {
+      display: block;
+      font-size: 0.85rem;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      margin-bottom: 0.4rem;
+      color: var(--rose);
+    }
+
+    .suggestion button {
+      border: none;
+      background: transparent;
+      padding: 0;
+      margin-top: 0.25rem;
+      font-weight: 500;
+      color: var(--ink);
+      cursor: pointer;
+    }
+
+    .chat-panel {
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .chat-layout {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      font-family: "Poppins", system-ui, sans-serif;
+      max-width: 1100px;
+      margin: 0 auto;
+      width: 100%;
+      min-height: 520px;
+    }
+
+    .chat-transcript {
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      flex: 1;
+    }
+
+    .message {
+      max-width: 75%;
+      padding: 1.1rem 1.4rem;
+      border-radius: 22px;
+      line-height: 1.55;
+      font-size: 1rem;
+      background: rgba(255, 255, 255, 0.9);
+      border: 1px solid rgba(32, 26, 24, 0.1);
+      box-shadow: 0 6px 25px rgba(32, 26, 24, 0.08);
+    }
+
+    .message.user {
+      align-self: flex-end;
+      background: var(--rose);
+      color: #fffdf7;
+      border: none;
+    }
+
+    .chat-input {
+      border: 1px solid rgba(32, 26, 24, 0.18);
+      border-radius: 999px;
+      padding: 0.35rem 0.5rem 0.35rem 1.25rem;
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+      background: rgba(255, 255, 255, 0.85);
+    }
+
+    .chat-input textarea {
+      flex: 1;
+      border: none;
+      resize: none;
+      font: 500 1rem "Poppins", system-ui, sans-serif;
+      background: transparent;
+      padding: 0.65rem 0;
+    }
+
+    .chat-input textarea:focus {
+      outline: none;
+    }
+
+    .send-btn {
+      border: none;
+      border-radius: 999px;
+      padding: 0.7rem 1.4rem;
+      background: var(--ink);
+      color: #fff;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    @media (max-width: 700px) {
+      .top-bar {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .nav-links {
+        gap: 1rem;
+      }
+
+      .nav-link::after {
+        bottom: -0.35rem;
+      }
+
+      .check-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .message {
+        max-width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="top-bar">
+      <button class="brand" type="button" data-target="home-view">AP Style Checker</button>
+      <nav class="nav-links" aria-label="Primary">
+        <button class="nav-link" data-target="check-view">Check</button>
+        <button class="nav-link" data-target="chat-view">Chat</button>
+      </nav>
+    </header>
+
+    <main>
+      <section id="home-view" class="view active" aria-label="Home view">
+        <div class="hero">
+          <h1>Check anything.</h1>
+          <p class="subheading">AI for editors.</p>
+          <p>Check your writing against AP Style’s guidance with an assistant that cites sources, clarifies grammar, and keeps your newsroom consistent.</p>
+          <div class="hero-card" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <section id="check-view" class="view" aria-label="Check experience" aria-hidden="true">
+        <div class="check-panel">
+          <p class="section-label">Check</p>
+          <div class="check-grid">
+            <article class="manuscript" contenteditable="true">
+              Rivera, the <mark>Governor Elect</mark> of the state, said the region could add <mark>200 thousand</mark> jobs by 2025. “We’ll continue building a
+              resilient grid,” she said, noting that the state’s weatherized plants saved “millions” last winter.
+            </article>
+            <div class="suggestions">
+              <div class="suggestion">
+                <strong>Hyphenation</strong>
+                Hyphenate titles that include -elect. Replace with <em>governor-elect</em> and keep subsequent mentions lowercase.
+                <button type="button">Apply fix · governor-elect</button>
+              </div>
+              <div class="suggestion">
+                <strong>Numerals</strong>
+                Spell out “200,000” per AP or provide exact data. Suggestion: “200,000 jobs.”
+                <button type="button">Apply fix · 200,000</button>
+              </div>
+              <div class="suggestion">
+                <strong>Flow</strong>
+                Add attribution after the first sentence for clarity. Suggestion: “Rivera said Wednesday.”
+                <button type="button">Insert suggestion</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="chat-view" class="view" aria-label="Chat experience" aria-hidden="true">
+        <div class="chat-panel">
+          <div class="chat-layout">
+            <p class="section-label">Chat</p>
+            <div class="chat-transcript">
+              <div class="message user">Should I capitalize "governor-elect" when it follows a name in a caption?</div>
+              <div class="message assistant">
+                Use lowercase when the title follows the name: “John Rivera, the governor-elect, said…” Reserve uppercase when it directly precedes the name.
+              </div>
+              <div class="message user">Need a quick refresher on numerals for millions.</div>
+              <div class="message assistant">
+                Spell out “million” with a figure — “3 million” — unless it begins a sentence. Include decimals for more precision, e.g., “3.2 million.”
+              </div>
+            </div>
+            <form class="chat-input" onsubmit="return false;">
+              <textarea rows="1" placeholder="Ask about titles, numerals, punctuation…"></textarea>
+              <button class="send-btn" type="button">Send</button>
+            </form>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    const navButtons = document.querySelectorAll('[data-target]');
+    const navTabs = document.querySelectorAll('.nav-link');
+    const views = document.querySelectorAll('.view');
+
+    function setActiveView(targetId) {
+      views.forEach((view) => {
+        const isTarget = view.id === targetId;
+        view.classList.toggle('active', isTarget);
+        view.setAttribute('aria-hidden', isTarget ? 'false' : 'true');
+      });
+    }
+
+    navButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        if (button.classList.contains('active')) return;
+
+        navTabs.forEach((tab) => tab.classList.remove('active'));
+        if (button.classList.contains('nav-link')) {
+          button.classList.add('active');
+        }
+        setActiveView(button.dataset.target);
+      });
+    });
+  </script>
+</body>
+</html>
