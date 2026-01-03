@@ -28,4 +28,4 @@ class Ingest:
 
 if __name__ == "__main__":
     ingest = Ingest()
-    ingest.jsonl_ingest("2025-12-31_cleaned")
+    ingest.jsonl_ingest("2026-01-01blog_cleaned")
