@@ -29,6 +29,28 @@
       font-family: "Poppins", system-ui, sans-serif;
     }
 
+    body::before {
+      content: "";
+      position: fixed;
+      bottom: -500px;          /* push down so it peeks in */
+      left: 50%;
+      transform: translateX(-50%);
+
+      width: 700px;
+      height: 900px;
+      border-radius: 50%;
+
+      background: radial-gradient(
+        circle,
+        var(--rose),
+        transparent 70%
+      );
+
+      filter: blur(60px);
+      z-index: -1;             /* strictly behind content */
+      pointer-events: none;   /* cannot interfere */
+    }
+
     #nav-bar {
       margin: 0;
       padding: 20px 40px;
@@ -104,20 +126,6 @@
       overflow: hidden;
     }
 
-    /* .chat-panel::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: -550px;
-      transform: translateX(-50%);
-      width: 900px;
-      height: 1000px;
-      background: radial-gradient(circle, rgba(192, 83, 117, 0.25), transparent 70%);
-      filter: blur(60px);
-      pointer-events: none;
-      z-index: 0;
-    } */
-
     .chat-layout {
       position: relative;
       z-index: 1;
@@ -175,8 +183,6 @@
       bottom: 0;
       display: flex;
       justify-content: center;
-      background: var(--ivory);
-      padding: 0 0 1rem;
     }
 
     .chat-input {
@@ -246,7 +252,7 @@
   <div class="page-shell">
     
     <main class="content-lane chat-panel">
-      <div class="section-label">Ask our AI anything AP Style.</div>
+      <div class="section-label">Ask me anything about AP Style.</div>
       <div class="chat-layout">
         <div class="chat-content">
           <div class="chat-transcript">
