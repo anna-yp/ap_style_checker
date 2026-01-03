@@ -220,13 +220,7 @@
     <main class="content-lane chat-panel">
       <div class="chat-layout">
         <div class="chat-content">
-          <p class="section-label">Chat</p>
           <div class="chat-transcript">
-            <div class="message assistant">We’re ready whenever you are—ask about capitalization, numerals, or how to cite a source.</div>
-            <div class="message user">Should I capitalize "governor-elect" when it follows a name in a caption?</div>
-            <div class="message assistant">
-              Keep it lowercase once the title follows the name: “John Rivera, the governor-elect, said…” Use uppercase only when it directly precedes the name.
-            </div>
             <div class="message user">Need a quick refresher on numerals for millions.</div>
             <div class="message assistant">
               Pair a figure with the word “million” — “3 million” — unless the sentence begins with the number. Include decimals if precision is needed (e.g., “3.2 million”).
@@ -236,7 +230,7 @@
         <div class="chat-input-wrapper">
           <form class="chat-input" onsubmit="return false;">
             <textarea rows="1" placeholder="Ask about titles, numerals, punctuation…"></textarea>
-            <button class="send-btn" type="button" aria-label="Send message" action="onSend">
+            <button class="send-btn" type="submit" aria-label="Send message">
               <svg fill="none" viewBox="0 0 24 24" stroke-width="1.5">
                 <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12L19.5 4.5L13.5 12L19.5 19.5L4.5 12Z"></path>
               </svg>
@@ -250,7 +244,7 @@
 
 <script>
   const form = document.querySelector('.chat-input');
-  const input = document.querySelector('.chat-input textarea');
+  const chatInput = document.querySelector('.chat-input textarea');
   const transcript = document.querySelector('.chat-transcript');
 
   function appendMessage(role, text) {
@@ -262,12 +256,14 @@
     }
 
   form.addEventListener('submit', async (event) => {
-    const text = input.value.trim();
+    event.preventDefault(); 
+
+    const text = chatInput.value.trim();
     appendMessage('user', text);
-    textarea.value = '';
+    chatInput.value = '';
 
     try {
-      fetch('/send_chat', {
+      const response = await fetch('/send_chat', {
         method: 'POST',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ message: text })

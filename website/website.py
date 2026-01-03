@@ -49,11 +49,11 @@ def home_page():
     return render_template('home.html')
 
 @app.route('/check')
-def home_page():
+def check_page():
     return render_template('check.html')
 
 @app.route('/chat')
-def home_page():
+def chat_page():
     return render_template('chat.html')
 
 @app.route('/checker', methods=["POST"])
@@ -61,40 +61,18 @@ def check_for_grammar():
     payload = request.get_json(silent=True) or {}
     text_content = payload.get('text', '')
 
-
     return jsonify({
         'text_with_divs': 'text_with_divs',
         'issues': 'issues',
     })
 
-@app.route('/chat', methods=["POST"])
+@app.route('/send_chat', methods=["POST"])
 def prompt_gpt():
     payload = request.get_json(silent=True) or {}
     text_content = payload.get('text', '')
 
     query = text_content
-    prompt = Prompt('2025-12-31')
-    response = prompt.prompt_gpt(query)
-
-    answer_parts = []
-    for item in response.output:
-        if item.type == "message" and item.role == "assistant":
-            for part in item.content:
-                if part.type == "output_text":
-                    answer_parts.append(part.text)
-    answer_text = "".join(answer_parts)
-
-    print(f'answer: {answer_text}')
-    return jsonify({"answer": answer_text})
-
-
-@app.route('/chat', methods=["POST"])
-def prompt_gpt():
-    payload = request.get_json(silent=True) or {}
-    text_content = payload.get('text', '')
-
-    query = text_content
-    prompt = Prompt('2025-12-31')
+    prompt = Prompt()
     response = prompt.prompt_gpt(query)
 
     answer_parts = []

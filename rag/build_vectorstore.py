@@ -63,7 +63,7 @@ class JsonlVectorPipeline:
 
         similar_docs = vectorstore.similarity_search_with_score(
             f"{query}",
-            k=10
+            k=5
             )
         
         # print(similar_docs[:3])
