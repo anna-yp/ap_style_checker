@@ -1,84 +1,74 @@
 from pathlib import Path
 import sys
+import os
 from dotenv import load_dotenv
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from rag.embedding import Embed  
-from rag.ingest import Ingest 
-from scripts.clean_data import cleanJsonl  
+from scripts.embedding import Embed  
+from scripts.ingest import Ingest 
+from rag.clean_data import cleanJsonl  
 
 from langchain_openai import OpenAIEmbeddings
+from langchain_community.document_loaders import JSONLoader
 from langchain_community.vectorstores import FAISS
 load_dotenv()
 
 class JsonlVectorPipeline:
-    def __init__(self, jsonl_name):
+    def __init__(self):
         self.cleaner = cleanJsonl()
-        self.ingestor = Ingest()
 
-        self.jsonl_name = jsonl_name
+        self.clean_dir = Path(os.getenv("CLEAN_DATA_DIR"))
+        self.vectorstore_dir = Path(os.getenv("VECTORSTORE_DIR"))
 
-        self.docs = None
-        self.vectorstore = None
+        self.docs = []
+        self.embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
 
-    def prep_docs(self, jsonl_name):
-        self.cleaner.write_clean_jsonl(jsonl_name)
-        docs = self.ingestor.jsonl_ingest(f"{jsonl_name}_cleaned")
-        
-        self.docs = docs
-        return docs
+    def jsonl_ingest(self, jsonl_name: str):
+        '''load jsonl file as langchain doc using langchain's loader'''
+        file_path = self.clean_dir/f"{jsonl_name}.jsonl"
+        if not file_path:
+            print('JSONL hasn\'t been cleaned yet')
+            return
+
+        loader = JSONLoader(
+            file_path=str(file_path),
+            jq_schema=".",
+            text_content=False,
+            json_lines=True,
+        )
+        return loader.load()
+    
+    def prep_docs(self, jsonl_names):
+        for jsonl_name in jsonl_names:
+            self.cleaner.write_clean_jsonl(jsonl_name)
+            doc = self.jsonl_ingest(jsonl_name)
+            self.docs.extend(doc)
+
+        return self.docs
 
     def build_vectorstore(self, docs):
-        embeddings = OpenAIEmbeddings(model="text-embedding-3-small")
-        vectorstore = FAISS.from_documents(docs, embeddings)
+        vectorstore = FAISS.from_documents(docs, self.embeddings)
+        vectorstore.save_local(self.vectorstore_dir)
 
-        print(vectorstore)
-        self.vectorstore = vectorstore
+        print(f'New vectorstore: {vectorstore}')
         return vectorstore
     
     def query_vectorstore(self, query: str) -> tuple:
-        if not self.docs:
-            self.prep_docs(self.jsonl_name)
-        if not self.vectorstore:
-            self.build_vectorstore(self.docs)
+        vectorstore = FAISS.load_local(self.vectorstore_dir, self.embeddings, allow_dangerous_deserialization=True)
+        if not vectorstore:
+            print("Vectorstore hasn't been created yet")
 
-        similar_docs = self.vectorstore.similarity_search_with_score(
-            f"{query}"
+        similar_docs = vectorstore.similarity_search_with_score(
+            f"{query}",
+            k=10
             )
-        for doc, score in similar_docs:
-            print(doc, score)
-
-        self.similar_docs = similar_docs
+        
+        # print(similar_docs[:3])
         return similar_docs
     
-# class QueryVectorstore():
-#     def __init__(self, jsonl_name: str):
-#         pipeline = JsonlVectorPipeline()
-#         self.docs = pipeline.prep_docs(jsonl_name) if not pipeline.docs else pipeline.docs
-#         self.vectorstore = pipeline.build_vectorstore(jsonl_name)
-#         self.similar_docs = None
 
-#     def to_relevance(score: float) -> float:
-#         if 0.0 <= score <= 1.0:
-#             return 1.0 - score
-#         return 1.0 / (1.0 + score)
-
-#     def query_vectorstore(self, query: str) -> tuple:
-#         similar_docs = self.vectorstore.similarity_search_with_score(
-#             f"{query}"
-#             )
-#         for doc, score in similar_docs:
-#             print(doc, score)
-
-#         self.similar_docs = similar_docs
-#         return similar_docs
-    
-#     def synthesize_similar_docs(self):
-#         pass
-    
-    
-
-    
+# json = JsonlVectorPipeline()
+# json.query_vectorstore('Should i captialize principal of a school')
