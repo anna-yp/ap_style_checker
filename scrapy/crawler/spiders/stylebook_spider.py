@@ -1,29 +1,18 @@
-from pathlib import Path
 
 import scrapy
 import re
 from scrapy.http import FormRequest
 from scrapy.linkextractors import LinkExtractor
-from crawler.items import Text
+from crawler.items import entryText
 
 
 class stylebookSpider(scrapy.Spider):
     name = "stylebook"
     login_url = "https://www.apstylebook.com/users/sign_in"
-    start_urls = [
-        "https://www.apstylebook.com/ap_stylebook",
-        # "https://www.apstylebook.com/merriam_webster", 
-        # "https://www.apstylebook.com/ask_the_editors", 
-        # "https://www.apstylebook.com/topicals",
-        # "https://www.apstylebook.com/blog_posts" 
-    ]
 
     link_extractor = LinkExtractor(
             allow= [
                 '/ap_stylebook',
-                # '/merriam_webster',
-                # '/ask_the_editors',
-                # '/blog_posts'
                 ],
             allow_domains=["apstylebook.com"]
             )
@@ -41,41 +30,23 @@ class stylebookSpider(scrapy.Spider):
             url=self.login_url,
             formdata={
                 "authenticity_token": csrf,
-                'user[login]': 'scotscoopeditor3@gmail.com',
-                'user[password]': '$c0tSc00p',
+                'user[login]': 'scotscoopeditor2@gmail.com',
+                'user[password]': '',
             },
             callback=self.parse,
             )
-        
-    # def parse_list(self, response):
-    #     text_nodes = response.xpath("""
-    #         //body//*[not(self::script or self::style or self::noscript)]
-    #         //text()[normalize-space()]
-    #     """).getall()
-
-    #     text = " ".join(t.strip() for t in text_nodes)
-
-    #     scraped_text = Text()
-
-    #     scraped_text['source_url'] = response.url
-    #     scraped_text['text_content'] = text
-
-    #     yield scraped_text
-
-    #     for link in self.link_extractor.extract_links(response):
-    #         yield scrapy.Request(link.url, callback=self.parse)
 
     def is_stylebook_url(self, url):
-        STYLEBOOK_RE = re.compile(r"^https?://(www\.)?apstylebook\.com/ap_stylebook/[^/?#]+/?$")
+        stylebook_re = re.compile(r"^https?://(www\.)?apstylebook\.com/ap_stylebook/[^/?#]+/?$")
 
-        if STYLEBOOK_RE.match(url):
+        if stylebook_re.match(url):
             return True
     
     def parse(self, response):
         if self.is_stylebook_url(response.url):
             self.logger.info(f"Scraping article: {response.url}")
 
-            scraped_text = Text()
+            scraped_text = entryText()
 
             header = response.xpath("//h1[@class='entry_header']/text()").get()
             entry = response.xpath("//div[@class='entry_content']//text()").getall()

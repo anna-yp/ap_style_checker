@@ -154,6 +154,3 @@ class Grammar:
                         continue
 
         return issues    
-
-config = config_loader('config.json')
-grammar = Grammar(config)

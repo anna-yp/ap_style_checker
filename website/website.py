@@ -1,4 +1,14 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, stream_with_context, Response
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from rag.build_vectorstore import JsonlVectorPipeline
+from rag.search import Prompt
+
 
 def render_issue_spans(text, issues):
     """Return text with span wrappers for each issue range."""
@@ -56,6 +66,48 @@ def check_for_grammar():
         'text_with_divs': 'text_with_divs',
         'issues': 'issues',
     })
+
+@app.route('/chat', methods=["POST"])
+def prompt_gpt():
+    payload = request.get_json(silent=True) or {}
+    text_content = payload.get('text', '')
+
+    query = text_content
+    prompt = Prompt('2025-12-31')
+    response = prompt.prompt_gpt(query)
+
+    answer_parts = []
+    for item in response.output:
+        if item.type == "message" and item.role == "assistant":
+            for part in item.content:
+                if part.type == "output_text":
+                    answer_parts.append(part.text)
+    answer_text = "".join(answer_parts)
+
+    print(f'answer: {answer_text}')
+    return jsonify({"answer": answer_text})
+
+
+@app.route('/chat', methods=["POST"])
+def prompt_gpt():
+    payload = request.get_json(silent=True) or {}
+    text_content = payload.get('text', '')
+
+    query = text_content
+    prompt = Prompt('2025-12-31')
+    response = prompt.prompt_gpt(query)
+
+    answer_parts = []
+    for item in response.output:
+        if item.type == "message" and item.role == "assistant":
+            for part in item.content:
+                if part.type == "output_text":
+                    answer_parts.append(part.text)
+    answer_text = "".join(answer_parts)
+
+    print(f'answer: {answer_text}')
+    return jsonify({"answer": answer_text})
+
 
 if __name__ == "__main__":
     port = 5000
