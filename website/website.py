@@ -1,6 +1,4 @@
 from flask import Flask, render_template, request, jsonify
-from services.checker import grammar
-
 
 def render_issue_spans(text, issues):
     """Return text with span wrappers for each issue range."""
@@ -34,19 +32,17 @@ app = Flask(__name__)
 
 @app.route('/')
 def landing_page():
-    return render_template('home.html')
+    return render_template('premium_interface.html')
 
 @app.route('/checker', methods=["POST"])
 def check_for_grammar():
     payload = request.get_json(silent=True) or {}
     text_content = payload.get('text', '')
 
-    issues = grammar.check_quote_and_pos(text_content)
-    text_with_divs = render_issue_spans(text_content, issues)
 
     return jsonify({
-        'text_with_divs': text_with_divs,
-        'issues': issues,
+        'text_with_divs': 'text_with_divs',
+        'issues': 'issues',
     })
 
 if __name__ == "__main__":
