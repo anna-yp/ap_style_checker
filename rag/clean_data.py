@@ -37,4 +37,4 @@ class cleanJsonl:
 
 if __name__ == "__main__":
     cleaner = cleanJsonl()
-    cleaner.write_clean_jsonl("2025-12-31")
+    cleaner.write_clean_jsonl("2026-01-02editors")
