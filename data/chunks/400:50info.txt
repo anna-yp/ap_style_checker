@@ -1,0 +1,14 @@
+--- Document Chunking & Estimation Results ---
+Chunk Size: 400 | Overlap: 50
+
+--- Overall Document Statistics (before chunking) ---
+  Total Raw Characters Across All Processed Files: 1588661
+  Total Raw Tokens (tiktoken est.) Across All Processed Files: 329716
+  Total Raw Estimated Sentences Across All Processed Files: 16677
+  Average Chars per Processed Document: 454.29
+  Average Tokens per Processed Document: 94.29
+  Average Sentences per Processed Document: 4.77
+
+--- Detailed File Results ---
+--- Summary ---
+TOTAL VECTORS/CHUNKS PROCESSED ACROSS ALL DOCUMENTS: 7275
