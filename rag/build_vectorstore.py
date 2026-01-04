@@ -31,8 +31,8 @@ class JsonlVectorPipeline:
 
     def jsonl_ingest(self, jsonl_name: str):
         '''
-        load jsonl file as langchain doc once and then twice
-        with the url as metadata using langchain's loader
+        load jsonl file as langchain doc and add url and token 
+        as metadata using langchain's loader
         '''
         encoding = tiktoken.encoding_for_model("gpt-5-nano")
 
@@ -48,10 +48,9 @@ class JsonlVectorPipeline:
             json_lines=True,
         )
         
-        raw_lines = loader.load()
+        docs = loader.load()
 
-        docs = []
-        for doc in raw_lines:
+        for doc in docs:
             payload = json.loads(doc.page_content) 
             
             header = payload.get("entry_header") or payload.get("question") or ""
@@ -60,16 +59,10 @@ class JsonlVectorPipeline:
             combined_text = f"{header}\n\n{body}".strip()
             token_count = len(encoding.encode(combined_text))
 
-            docs.append(
-                Document(
-                    page_content=combined_text,
-                    metadata={
-                        **doc.metadata,            
-                        "source_url": payload.get("source_url"),
-                        "token_count": token_count
-                    },
-                )
-            )
+            doc.page_content = combined_text
+            doc.metadata["source_url"] = payload.get("source_url")
+            doc.metadata["token_count"] = token_count
+
         print(docs[-1])
         return docs
     
