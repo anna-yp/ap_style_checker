@@ -86,6 +86,9 @@ class JsonlVectorPipeline:
             return 1.0 - score
         return 1.0 / (1.0 + score)
     
+    def metadata_func(self, record, metadata):
+        return record.get("metadata", {})
+    
     def query_vectorstore(self, query: str) -> tuple:
         vectorstore = FAISS.load_local(self.vectorstore_dir, self.embeddings, allow_dangerous_deserialization=True)
         if not vectorstore:
@@ -102,16 +105,34 @@ class JsonlVectorPipeline:
             similarity_score = self.to_similarity(score)
             doc.metadata["similarity_score"] = similarity_score
 
-            print(doc, doc.metadata['token_count'], doc.metadata["source_url"], doc.metadata["similarity_score"], doc.metadata["faiss_score"], )
+            # doc.metadata['token_count'], doc.metadata["source_url"], doc.metadata["similarity_score"], doc.metadata["faiss_score"], 
+            # print(doc)
+            print(query)
+            print(doc.metadata['token_count'], doc.metadata["source_url"], doc.metadata["similarity_score"], doc.metadata["faiss_score"])
         return similar_docs
-    
     
 
 jsonl = JsonlVectorPipeline()
 names = ['2026-01-01blog_cleaned', '2026-01-01stylebook_cleaned', '2026-01-02editors_cleaned']
 test_names = ['2026-01-01blog_cleaned']
 
-# docs = jsonl.prep_docs(names)
+# docs = jsonl.prep_docs(test_names)
 # jsonl.build_vectorstore(docs)
 
-jsonl.query_vectorstore('Should i captialize professor at a school')
+# docs = []
+# path = Path('/Users/Bettina/side_quests/ap_style_app/data/chunks/400:50chunks.jsonl')
+# with open(path) as f:
+#     for line in f:
+#         record = json.loads(line)
+#         docs.append(
+#             Document(
+#                 page_content=record["page_content"],
+#                 metadata=record["metadata"],
+#             )
+#         )
+        
+# chunked_docs = docs
+# print(chunked_docs[-1])
+# jsonl.build_vectorstore(chunked_docs)
+
+# jsonl.query_vectorstore('Should i captialize professor at a school')
