@@ -69,9 +69,11 @@ def check_for_grammar():
 @app.route('/send_chat', methods=["POST"])
 def prompt_gpt():
     payload = request.get_json(silent=True) or {}
-    text_content = payload.get('text', '')
+    print(payload)
+    text_content = payload.get('message', '')
 
     query = text_content
+    print(f'query: {query}')
     prompt = Prompt()
     response = prompt.prompt_gpt(query)
 

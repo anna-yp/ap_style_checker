@@ -83,6 +83,8 @@ def main():
         token_count = count_tokens(chunk.page_content)
         chunk.metadata['token_count'] = token_count
 
+    print(chunks[-1])
+
     num_chunks = len(chunks)
     total_chunks_processed += num_chunks
 

@@ -41,9 +41,9 @@ class Prompt:
         )
 
         duration = start - time.perf_counter()
-        
+
         load_dotenv()
-        log_dir = os.getenv("LOG_DIR")
+        log_dir = Path(os.getenv("LOG_DIR"))
         log_dir.mkdir(exist_ok=True)
 
         doc_stats = []
