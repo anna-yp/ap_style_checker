@@ -1,5 +1,6 @@
 faiss-cpu==1.13.2
 fastapi==0.115.5
+fastapi[standard]
 uvicorn[standard]==0.32.0
 itemadapter==0.13.0
 langchain-classic==1.0.1
