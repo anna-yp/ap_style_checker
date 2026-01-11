@@ -8,8 +8,7 @@ import json
 from datetime import datetime
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+load_dotenv(PROJECT_ROOT / ".env")
 
 from rag.build_vectorstore import JsonlVectorPipeline
 from openai import OpenAI
@@ -42,7 +41,6 @@ class Prompt:
 
         duration = start - time.perf_counter()
 
-        load_dotenv()
         log_dir = Path(os.getenv("LOG_DIR"))
         log_dir.mkdir(exist_ok=True)
 

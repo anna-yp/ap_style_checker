@@ -4,10 +4,11 @@ from dotenv import load_dotenv
 import re
 from pathlib import Path
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(PROJECT_ROOT / ".env")
 
 class cleanJsonl:
     def __init__(self):
-        load_dotenv()
 
         self.data_dir = Path(os.getenv("DATA_DIR"))
         self.raw_dir = Path(os.getenv("RAW_DATA_DIR"))

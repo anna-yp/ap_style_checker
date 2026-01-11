@@ -7,6 +7,9 @@ from pathlib import Path
 from build_vectorstore import JsonlVectorPipeline
 import json
 
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(PROJECT_ROOT / ".env")
+
 # --- NLTK Punkt Downloader ---
 # Ensures all necessary NLTK tokenizer data is available.
 nltk_resources = ['punkt', 'punkt_tab'] # List of NLTK resources to check/download
@@ -32,7 +35,6 @@ print("--- NLTK Data Check Complete ---\n")
 CHUNK_SIZE = 400
 CHUNK_OVERLAP = 50
 
-load_dotenv()
 chunk_dir = Path(os.getenv("CHUNK_DIR"))
 
 data_name = (f'{CHUNK_SIZE}:{CHUNK_OVERLAP}chunks.jsonl')

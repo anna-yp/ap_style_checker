@@ -5,8 +5,7 @@ from dotenv import load_dotenv
 import json
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
-if str(PROJECT_ROOT) not in sys.path:
-    sys.path.insert(0, str(PROJECT_ROOT))
+load_dotenv(PROJECT_ROOT / ".env")
 
 from rag.clean_data import cleanJsonl  
 
@@ -15,7 +14,6 @@ import tiktoken
 from langchain_core.documents import Document
 from langchain_community.document_loaders import JSONLoader
 from langchain_community.vectorstores import FAISS
-load_dotenv()
 
 class JsonlVectorPipeline:
     def __init__(self):
