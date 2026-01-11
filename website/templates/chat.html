@@ -302,7 +302,6 @@
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify({ message: text })
       })
-      if (!response.ok) throw new Error('Network issue');
 
       const data = await response.json();
       if (data.answer) {
@@ -310,6 +309,7 @@
       }
 
       } catch (err) {
+        appendMessage('assistant', err);
         appendMessage('assistant', 'Unable to reach the server right now.');
         console.error(err);
     }
