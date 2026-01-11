@@ -29,6 +29,25 @@
       font-family: "AG Display", "Noto Serif Display", "Georgia", serif;
     }
 
+    #nav-bar {
+      margin: 0;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      position: relative;
+      background: var(--ivory);
+      border-bottom: 1px var(--ivory);
+      box-shadow: 0 6px 24px var(--ivory);
+      gap: 10px;
+    }
+
+    #nav-bar .bar-right {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
     .page-shell {
       width: 100%;
       padding: 2rem clamp(1.5rem, 4vw, 3.5rem) 2.5rem;
@@ -113,21 +132,23 @@
   </style>
 </head>
 <body>
-  <div class="page-shell">
-    <header class="top-bar">
-      <button class="brand" type="button">ap style checker</button>
+  <div id="nav-bar">
+    <button class="brand" type="button">AP Style Checker</button>
+
+    <div class="bar-right">
       <nav class="nav-links" aria-label="Primary">
         <a class="nav-link active" href="/home">Home</a>
-        <a class="nav-link" href="/check">Check</a>
         <a class="nav-link" href="/chat">Chat</a>
       </nav>
-    </header>
+    </div>
+  </div>
+
+  <div class="page-shell">
 
     <main class="content-lane">
       <section class="hero">
         <h1>Check anything.</h1>
-        <p class="subheading">AI for editors.</p>
-        <p>Check your writing against AP Style’s guidance with an assistant that cites sources, clarifies grammar, and keeps your newsroom consistent.</p>
+        <p class="subheading">Check your writing against AP Style’s guidance with an assistant that cites sources, clarifies grammar, and keeps your newsroom consistent.</p>
         <div class="hero-card" aria-hidden="true"></div>
       </section>
     </main>
