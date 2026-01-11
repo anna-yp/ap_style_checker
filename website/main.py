@@ -29,8 +29,14 @@ async def root(request: Request):
         request=request, name="home.html"
     )
 
+@app.get("/home", response_class=HTMLResponse)
+async def home(request: Request):
+    return templates.TemplateResponse(
+        request=request, name="home.html"
+    )
+
 @app.get("/chat", response_class=HTMLResponse)
-async def root(request: Request):
+async def chat(request: Request):
     return templates.TemplateResponse(
         request=request, name="chat.html"
     )
